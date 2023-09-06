@@ -1,11 +1,10 @@
 <script setup lang="ts">
-  import MemoryBoard from "./components/MemoryBoard.vue";
-
+import MemoryBoard from './components/MemoryBoard.vue'
 </script>
 
 <template>
   <main>
-    <MemoryBoard></MemoryBoard>
+    <MemoryBoard class="memory-board"></MemoryBoard>
   </main>
   <!-- <header>
     <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
@@ -28,6 +27,19 @@ header {
 .logo {
   display: block;
   margin: 0 auto 2rem;
+}
+
+main {
+  display: flex;
+  place-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.memory-board {
+  width: 100%;
+  display: flex;
+  place-items: flex-start;
+  flex-wrap: wrap;
 }
 
 @media (min-width: 1024px) {

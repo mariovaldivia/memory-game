@@ -1,10 +1,9 @@
 <template>
-  <div>
-    <figure class="flip-box">
+    <button class="flip-box" :aria-label="cardLabel">
       <div class="flip-box-inner" :class="{ flip: flip }">
 
         <div class="flip-box-front">
-          <img class="animal-card-image img-thumbnail" :src="CardBack" alt="" />
+          <img class="animal-card-image img-thumbnail" :src="CardBack" :alt="cardLabel" />
         </div>
 
         <div class="flip-box-back">
@@ -12,19 +11,22 @@
         </div>
 
       </div>
-    </figure>
-  </div>
+    </button>
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import CardBack from "../assets/Random_box_Card_back.svg";
 
 export default {
-  props: ['animal', 'flip'],
+  props: ['animal', 'flip', 'index'],
   setup(props) {
+    const cardLabel = computed(() => {
+        return `Card ${props.index + 1} ${props.flip ? props.animal.slug : ''}`
+    })
     return {
-      CardBack
+      CardBack,
+      cardLabel
     }
   }
 }
@@ -49,9 +51,10 @@ export default {
     opacity: .7;
   }
 
-  .flip-box {
+  button.flip-box {
     background-color: white;
     position: relative;
+    border: none
     /* width: 300px;
     height: 200px; */
     /* border: 1px solid #f1f1f1; */

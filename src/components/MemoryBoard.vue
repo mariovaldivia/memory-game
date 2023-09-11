@@ -1,32 +1,41 @@
 <template>
+  <welcome-game v-if="!name" @start-game="startGame"></welcome-game>
 
-    <Welcome v-if="!name" @start-game="startGame"></Welcome>
+  <GameScore :asserted="numberAsserted" :failed="numberFailed" :loaded="!loading"></GameScore>
 
-    <GameScore :asserted="numberAsserted" :failed="numberFailed"></GameScore>
+  <section class="card shadow-sm container">
 
-    <LoadingGame v-if="loading"></LoadingGame>
-    <MemoryCard class="animal-card" v-for="(animal, index) in animals" :animal="animal" :index="index" :key="index"
-      :flip="isFlipped(index)" @click="flipCard(index)">
-    </MemoryCard>
+    <div class="game d-flex justify-content-center">
+      <MemoryCard class="animal-card" v-for="(animal, index) in animals" :animal="animal" :index="index" :key="index"
+        :flip="isFlipped(index)" @click="flipCard(index)">
+      </MemoryCard>
+      <LoadingGame v-if="loading"></LoadingGame>
+    </div>
+  </section>
 
-    <GameEnded v-if="gameEnded" @start-game="startGame"></GameEnded>
+  <GameEnded v-if="gameEnded" :asserted="numberAsserted" :failed="numberFailed" @start-game="startGame"></GameEnded>
 </template>
 
 <script lang="ts">
-import { ref, reactive, toRaw, onMounted, watch } from 'vue'
+import { ref, toRaw, onMounted, watch } from 'vue'
 import { getAnimalImages } from '../services/animals'
 import MemoryCard from './MemoryCard.vue'
 import LoadingGame from './LoadingGame.vue'
-import Welcome from './Welcome.vue'
+import WelcomeGame from './WelcomeGame.vue'
 import GameScore from './GameScore.vue'
 import GameEnded from './GameEnded.vue'
 import { shuffle } from '../utils/utils'
-import { useUserStore } from '../stores/user';
+import { useUserStore } from '../stores/user'
 import { storeToRefs } from 'pinia'
 
 export default {
-  components: { 
-    MemoryCard, GameScore, LoadingGame, Welcome, GameEnded },
+  components: {
+    MemoryCard,
+    GameScore,
+    LoadingGame,
+    WelcomeGame,
+    GameEnded
+  },
   setup() {
     const animals = ref([])
     const numberOfPairs = 3
@@ -35,51 +44,51 @@ export default {
     const numberAsserted = ref(0)
     const numberFailed = ref(0)
     const gameEnded = ref(false)
-    const loading = ref(false)
+    const loading = ref(true)
 
-    const userStore = useUserStore();
+    const userStore = useUserStore()
     const { userName } = storeToRefs(userStore)
     onMounted(() => {
       console.log(userName.value)
-      if(userName.value){
+      if (userName.value) {
         loadGameBoard()
       }
-
     })
 
     const loadGameBoard = () => {
       getAnimalImages().then((response) => {
         // console.log(response.data)
-        const listOfAnimals = getListOfAnimals(response.data.entries);
+        const listOfAnimals = getListOfAnimals(response.data.entries)
         const listPairsOfAnimals = listOfAnimals.flatMap((data) => {
-          return [data, data];
+          return [data, data]
         })
         // console.log(listPairsOfAnimals)
         animals.value = shuffle(listPairsOfAnimals)
         loading.value = false
       })
     }
-  
-    watch(numberAsserted, async(newNumber, oldNumber) => {
-      console.log("aciertos", newNumber)
-      if(newNumber == numberOfPairs){
-        console.log("Ganaste")
+
+    watch(numberAsserted, async (newNumber, oldNumber) => {
+      console.log('aciertos', newNumber)
+      if (newNumber == numberOfPairs) {
+        console.log('Ganaste')
         gameEnded.value = true
       }
     })
 
-    watch(userName, async(newValue, oldValue) => {
-      console.log("aciertos", newValue)
-      if(newValue == ''){
-        resetGame()        
+    watch(userName, async (newValue, oldValue) => {
+      
+      if (newValue == '') {
+        resetGame()
+        loading.value = true
       }
     })
 
     const flipCard = (index) => {
       // const animalClicked = toRaw(animals.value)[index]
       const { slug } = animals.value[index]
-      console.log("clicked", index, slug)
-      console.log("selected", toRaw(selectedAnimal.value))
+      console.log('clicked', index, slug)
+      console.log('selected', toRaw(selectedAnimal.value))
       if (!canFlipCard(index) || isFlipped(index)) return
 
       const animalObj = {
@@ -91,42 +100,39 @@ export default {
       selectedAnimal.value = [animalObj, ...currentAnimals]
 
       const selected = toRaw(selectedAnimal.value)
-      if(selected.length == 2){
+      if (selected.length == 2) {
         const equalCards = checkEqualCards(selected)
-        if(equalCards){
+        if (equalCards) {
           assertedCards.value = [...selected, ...toRaw(assertedCards.value)]
           numberAsserted.value += 1
-        }else{
+        } else {
           numberFailed.value += 1
         }
 
         setTimeout(() => {
           cleanSelected()
-
         }, 1000)
       }
-
     }
 
     const cleanSelected = () => {
-        console.log("cleaning selected", selectedAnimal.value.length)
-        selectedAnimal.value = []
+      console.log('cleaning selected', selectedAnimal.value.length)
+      selectedAnimal.value = []
     }
 
     const canFlipCard = (id) => {
       // const { index, slug } = toRaw(animals.value)[id]
       const selected = toRaw(selectedAnimal.value)
-      return !hasIndexSelected(selected, id) && selected.length < 2;
+      return !hasIndexSelected(selected, id) && selected.length < 2
     }
 
     const hasIndexSelected = (selectedList: [], index) => {
       // console.log("selected", selectedList)
-      if(selectedList.length == 0) return null
-      return selectedList.find(card => card.index == index)
+      if (selectedList.length == 0) return null
+      return selectedList.find((card) => card.index == index)
     }
 
-    function isFlipped(index){
-      
+    function isFlipped(index) {
       const selected = hasIndexSelected(selectedAnimal.value, index)
       const asserted = hasIndexSelected(toRaw(assertedCards.value), index)
       // console.log(toRaw(assertedCards.value))
@@ -146,11 +152,12 @@ export default {
             slug: entry.meta.slug,
             uuid: entry.meta.uuid
           }
-        })).slice(0, numberOfPairs)
+        })
+      ).slice(0, numberOfPairs)
     }
 
     const startGame = () => {
-      console.log("starting game")
+      console.log('starting game')
       loading.value = true
       gameEnded.value = false
       resetGame()
@@ -166,13 +173,12 @@ export default {
       gameEnded.value = false
     }
 
-    console.log(userName)
     return {
       animals,
       flipCard,
       canFlipCard,
       isFlipped,
-      numberFailed, 
+      numberFailed,
       numberAsserted,
       loading,
       name: userName,
@@ -183,4 +189,14 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.game {
+  clear: both;
+  width: 100%;
+  display: flex;
+  gap: 0.2em;
+  place-items: flex-start;
+  flex-wrap: wrap;
+  padding: 1.5rem
+}
+</style>

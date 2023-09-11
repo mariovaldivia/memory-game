@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import MemoryBoard from './components/MemoryBoard.vue'
+  import MemoryBoard from './components/MemoryBoard.vue'
 </script>
 
 <template>
-  <main>
-    <MemoryBoard></MemoryBoard>
+  <main class="align-top">
+    <memory-board :pairs="6"></memory-board>
   </main>
 
 </template>
@@ -19,6 +19,7 @@ main {
   display: flex;
   place-items: flex-start;
   flex-wrap: wrap;
+  vertical-align: top;
 }
 
 .memory-board {
@@ -28,21 +29,5 @@ main {
   flex-wrap: wrap;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>

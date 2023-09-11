@@ -4,16 +4,16 @@
   <GameScore :asserted="numberAsserted" :failed="numberFailed" :loaded="!loading"></GameScore>
 
   <section class="card shadow-sm container">
-
     <div class="game d-flex justify-content-center">
-      <MemoryCard class="animal-card" v-for="(animal, index) in animals" :animal="animal" :index="index" :key="index"
+      <memory-card class="animal-card" v-for="(animal, index) in animals" :animal="animal" :index="index" :key="index"
         :flip="isFlipped(index)" @click="flipCard(index)">
-      </MemoryCard>
-      <LoadingGame v-if="loading"></LoadingGame>
+      </memory-card>
+
+      <loading-game v-if="loading"></loading-game>
     </div>
   </section>
 
-  <GameEnded v-if="gameEnded" :asserted="numberAsserted" :failed="numberFailed" @start-game="startGame"></GameEnded>
+  <game-ended v-if="gameEnded" :asserted="numberAsserted" :failed="numberFailed" @start-game="startGame"></game-ended>
 </template>
 
 <script lang="ts">
@@ -29,6 +29,9 @@ import { useUserStore } from '../stores/user'
 import { storeToRefs } from 'pinia'
 
 export default {
+  props:{
+    pairs: Number
+  },
   components: {
     MemoryCard,
     GameScore,
@@ -36,9 +39,8 @@ export default {
     WelcomeGame,
     GameEnded
   },
-  setup() {
+  setup(props) {
     const animals = ref([])
-    const numberOfPairs = 3
     const selectedAnimal = ref([])
     const assertedCards = ref([])
     const numberAsserted = ref(0)
@@ -57,27 +59,22 @@ export default {
 
     const loadGameBoard = () => {
       getAnimalImages().then((response) => {
-        // console.log(response.data)
         const listOfAnimals = getListOfAnimals(response.data.entries)
         const listPairsOfAnimals = listOfAnimals.flatMap((data) => {
           return [data, data]
         })
-        // console.log(listPairsOfAnimals)
         animals.value = shuffle(listPairsOfAnimals)
         loading.value = false
       })
     }
 
     watch(numberAsserted, async (newNumber, oldNumber) => {
-      console.log('aciertos', newNumber)
-      if (newNumber == numberOfPairs) {
-        console.log('Ganaste')
+      if (newNumber == props.pairs) {
         gameEnded.value = true
       }
     })
 
-    watch(userName, async (newValue, oldValue) => {
-      
+    watch(userName, async (newValue, oldValue) => {      
       if (newValue == '') {
         resetGame()
         loading.value = true
@@ -85,10 +82,8 @@ export default {
     })
 
     const flipCard = (index) => {
-      // const animalClicked = toRaw(animals.value)[index]
       const { slug } = animals.value[index]
-      console.log('clicked', index, slug)
-      console.log('selected', toRaw(selectedAnimal.value))
+
       if (!canFlipCard(index) || isFlipped(index)) return
 
       const animalObj = {
@@ -104,9 +99,9 @@ export default {
         const equalCards = checkEqualCards(selected)
         if (equalCards) {
           assertedCards.value = [...selected, ...toRaw(assertedCards.value)]
-          numberAsserted.value += 1
+          numberAsserted.value++
         } else {
-          numberFailed.value += 1
+          numberFailed.value++
         }
 
         setTimeout(() => {
@@ -116,31 +111,27 @@ export default {
     }
 
     const cleanSelected = () => {
-      console.log('cleaning selected', selectedAnimal.value.length)
       selectedAnimal.value = []
     }
 
-    const canFlipCard = (id) => {
-      // const { index, slug } = toRaw(animals.value)[id]
+    const canFlipCard = (id: Number) => {
       const selected = toRaw(selectedAnimal.value)
       return !hasIndexSelected(selected, id) && selected.length < 2
     }
 
-    const hasIndexSelected = (selectedList: [], index) => {
-      // console.log("selected", selectedList)
+    const hasIndexSelected = (selectedList: [], index: Number) => {
       if (selectedList.length == 0) return null
       return selectedList.find((card) => card.index == index)
     }
 
-    function isFlipped(index) {
+    function isFlipped(index: Number) {
       const selected = hasIndexSelected(selectedAnimal.value, index)
       const asserted = hasIndexSelected(toRaw(assertedCards.value), index)
-      // console.log(toRaw(assertedCards.value))
-      // console.log(selected, asserted)
       return selected || asserted
     }
 
-    const checkEqualCards = (selectedList) => {
+    const checkEqualCards = (selectedList: []) => {
+      if(selectedList.length != 2) return false
       return selectedList[0].slug == selectedList[1].slug
     }
 
@@ -153,7 +144,7 @@ export default {
             uuid: entry.meta.uuid
           }
         })
-      ).slice(0, numberOfPairs)
+      ).slice(0, props.pairs)
     }
 
     const startGame = () => {

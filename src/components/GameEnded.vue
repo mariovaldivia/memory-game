@@ -1,21 +1,20 @@
 <template>
   <modal>
-
     <section class=" p-5 z-100 bg-body-tertiary border rounded-3 welcome-overlay">
 
       <h1>Congratulations {{ name }}</h1>
 
-      <div class="row">
+      <div class="row ">
         <div class="col-6">
           <img class="" :src="Trophy" alt="Trophy" />
         </div>
-        <div class="col-6 align-middle">
 
-          <div class="vstack gap-3 p-2 ">
+        <div class="col-6 align-middle">
+          <div class="vstack gap-3 p-2 align-middle">
             <div class="p-2">{{ asserted }} asserted</div>
             <div class="p-2">{{ failed }} failed</div>
-
           </div>
+
         </div>
       </div>
 
@@ -25,18 +24,14 @@
             Play again
           </button>
         </div>
+
         <div class="p-1">
           <button type="button" class="btn btn-primary m-1" @click="changeUser">
             Change user
           </button>
-
         </div>
 
       </div>
-
-
-
-
     </section>
   </modal>
 </template>

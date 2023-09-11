@@ -42,7 +42,6 @@ export default {
   .animal-card-image {
     width: 150px;
     aspect-ratio: 2/3;
-
     object-fit: cover;
     transition: opacity 0.25s ease-in-out;
   }
@@ -55,14 +54,9 @@ export default {
     background-color: white;
     position: relative;
     border: none
-    /* width: 300px;
-    height: 200px; */
-    /* border: 1px solid #f1f1f1; */
-    /* perspective: 1000px; */
   }
 
   .flip-box-inner {
-
     width: 100%;
     height: 100%;
     text-align: center;
@@ -84,13 +78,19 @@ export default {
   }
 
   .flip-box-front {
-    /* background-color: #bbb; */
     color: black;
   }
 
   .flip-box-back {
-    /* background-color: #555; */
     color: white;
     transform: rotateY(180deg);
+  }
+
+  @media (max-width: 576px) {
+    .animal-card {
+      margin: 0.1em;
+      width: 100px;
+      height: 150px;
+    }
   }
 </style>

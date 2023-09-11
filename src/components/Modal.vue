@@ -16,7 +16,7 @@ export default {
 </script>
 
 <style>
-.modal {
-    background-color: rgba(0, 0, 0, 0.25)
-}
+    .modal {
+        background-color: rgba(0, 0, 0, 0.25)
+    }
 </style>

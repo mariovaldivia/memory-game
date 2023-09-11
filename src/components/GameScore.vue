@@ -1,43 +1,37 @@
 <template>
-    <section class="card container score shadow-sm">
+    <section class="card container my-2 shadow-sm">
 
         <div class="row" v-if="loaded">
-            <div class="col col-md-6">
+            <div class="col col-md-6 py-2 px-4">
                 {{ userName }}
-
-                <button class="btn btn-default" @click="changeUser">Cambiar</button>
+                <button class="btn btn-secondary btn-sm" @click="changeUser">
+                    Change
+                </button>
             </div>
+
             <div class="col-6">
                 <div class="row">
                     <div class="col-xs-12 col-md-6 justify-content-center">
                         <div class="hstack">
-                            <div class="p-2">Aciertos</div>
+                            <div class="p-2">Hits</div>
                             <div class="p-2">
                                 <span class=" text-bg-success py-1 px-3">
-
                                     {{ asserted }}
                                 </span>
                             </div>
-
-                        </div>
-
-        
+                        </div>      
                     </div>
 
                     <div class=" col-xs-12 col-md-6 justify-content-center">
                         <div class="hstack">
-                            <div class="p-2">Errores</div>
+                            <div class="p-2">Fails</div>
                             <div class="p-2">
                                 <span class=" text-bg-danger py-1 px-3 ">
-                                {{ failed }}
+                                    {{ failed }}
                                 </span>
                             </div>
-
                         </div>
-
                     </div>
-
-
                 </div>
 
             </div>
@@ -78,8 +72,5 @@ export default {
 </script>
 
 <style>
-.score {
-    padding: 1rem;
-    margin: 0.5em 0
-}
+
 </style>

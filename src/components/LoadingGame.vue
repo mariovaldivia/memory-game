@@ -1,17 +1,8 @@
 <template>
-    <!-- <div class="text-center m-5">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading board...</span>
-        </div>
-    </div> -->
-
-
     <div class="d-flex justify-content-center">
-
         <p aria-hidden="true" class="placeholder-wave">
             <span v-for="n in 12" class="placeholder col-1 card-placeholder" :key="n"></span>
         </p>
-
     </div>
 
 </template>
